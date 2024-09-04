@@ -1,0 +1,13 @@
+kubectl create ns argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.5.8/manifests/install.yaml
+brew install argocd
+kubectl patch svc argocd-server -n argocd -p '{"spec": {"type": "LoadBalancer"}}'
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+
+#check password
+argocd admin initial-password -n argocd 
+
+kubectl config set-context --current --namespace=argocd
+
+#error btw / try create app by UI 
+argocd app create guestbook --repo https://github.com/argoproj/argocd-example-apps.git --path guestbook --dest-server https://kubernetes.default.svc --dest-namespace default
